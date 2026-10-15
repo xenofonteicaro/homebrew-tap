@@ -1,0 +1,26 @@
+name: Homebrew formula
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    runs-on: macos-15
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tap this checkout
+        run: brew tap --custom-remote xenofonteicaro/tap "$GITHUB_WORKSPACE"
+      - name: Build from the immutable source
+        run: brew install --build-from-source --formula xenofonteicaro/tap/ze-coleta
+      - name: Test installed application
+        run: brew test xenofonteicaro/tap/ze-coleta
+      - name: Audit formula
+        run: brew audit --strict --formula xenofonteicaro/tap/ze-coleta
